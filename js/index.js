@@ -1,36 +1,56 @@
 window.addEventListener('DOMContentLoaded', init);
 function init() {
+	var loader = new GLTFLoader();
+	var path = '../glTF-Sample-Models\2.0\Duck\glTF-Binary/duck.glb';
+	loader.load(path, function(gltf){
+	  var modelObj = gltf.scene;
+	 
+	  /// モデルをSceneに追加
+	  scene.add(modelObj);
+	  
+	  /// モデルの表示を微調整...
+	  /// ここでは縮尺（scale）を調整
+	  var box = new THREE.Box3().setFromObject(modelObj);
+	  var scale = 1 / (box.max.x - box.min.x) * 10;
+	  modelObj.scale.set(scale, scale, scale);
+	  
+	  /** ポイントクラウドを読込モデルから生成 **/
+	  var pointCloudGeo = new THREE.Geometry();
+	  var pointCloudObj3dTypes = [
+	    'Mesh', 'SkinnedMesh'
+	  ];
 
-	viewWidth = 500;
-	viewHeight = 400
+	  /// Scene内の全MeshをGeometryに結合する
+	  scene.traverse(function(obj3d){
+	    if(pointCloudObj3dTypes.includes(obj3d.type)){
+	      var geo = new THREE.Geometry()
+	        .fromBufferGeometry(obj3d.geometry);
+	      var mesh = new THREE.Mesh(geo, obj3d.material);
+	      mesh.applyMatrix4(obj3d.matrix);
+	      mesh.updateMatrix();
+	      pointCloudGeo.merge(mesh.geometry, mesh.matrix);
+	    }
+	  }.bind(this));
 
-	const camera = new THREE.PerspectiveCamera(70, viewWidth / viewHeight, 0.01, 10);
-	camera.position.z = 1;
+	  /// 結合が終わったらポイントクラウド生成
+	  var pointCloud = new THREE.Points(
+	    pointCloudGeo, new THREE.PointsMaterial({
+	      /// 点のサイズ
+	      size: 1, 
+	      /// 点の色
+	      color: 0xFFFFFF,
+	      /// サイズ減退の有無
+	      sizeAttenuation: false
+	    })
+	  );
 
-	const scene = new THREE.Scene();
+	  /// サイズ調整とかしてSceneに追加
+	  var box = new THREE.Box3().setFromObject(pointCloud);
+	  var scale = 1 / (box.max.x - box.min.x) * 10;
+	  pointCloud.scale.set(scale, scale, scale);
+	  scene.add(pointCloud);
 
-	const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-	const material = new THREE.MeshNormalMaterial();
-
-	const mesh = new THREE.Mesh(geometry, material);
-	scene.add(mesh);
-
-	const renderer = new THREE.WebGLRenderer({
-	  antialias: true
+	  /// ひとまずモデル自体は非表示に
+	  modelObj.visible = false;
 	});
-	renderer.setSize(viewWidth, viewHeight);
-	renderer.setAnimationLoop(animation);
-	document.body.appendChild(renderer.domElement);
-
-	// animation
-
-	function animation(time) {
-
-	  mesh.rotation.x = time / 2000;
-	  mesh.rotation.y = time / 1000;
-
-	  renderer.render(scene, camera);
-
-	}
-
 }
