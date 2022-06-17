@@ -16,7 +16,7 @@ function init() {
 	  modelObj.scale.set(scale, scale, scale);
 	  
 	  /** ポイントクラウドを読込モデルから生成 **/
-	  var pointCloudGeo = new THREE.Geometry();
+	  var pointCloudGeo = new THREE.BufferGeometry();
 	  var pointCloudObj3dTypes = [
 	    'Mesh', 'SkinnedMesh'
 	  ];
@@ -24,8 +24,7 @@ function init() {
 	  /// Scene内の全MeshをGeometryに結合する
 	  scene.traverse(function(obj3d){
 	    if(pointCloudObj3dTypes.includes(obj3d.type)){
-	      var geo = new THREE.Geometry()
-	        .fromBufferGeometry(obj3d.geometry);
+	      var geo = new THREE.BufferGeometry(obj3d.geometry)
 	      var mesh = new THREE.Mesh(geo, obj3d.material);
 	      mesh.applyMatrix4(obj3d.matrix);
 	      mesh.updateMatrix();
@@ -52,6 +51,6 @@ function init() {
 	  scene.add(pointCloud);
 
 	  /// ひとまずモデル自体は非表示に
-	  modelObj.visible = false;
+	  modelObj.visible = true;
 	});
 }
