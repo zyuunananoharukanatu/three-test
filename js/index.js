@@ -1,7 +1,7 @@
 window.addEventListener('DOMContentLoaded', init);
 function init() {
 	var loader = new THREE.GLTFLoader();
-	var path = 'gltf/duck.glb';
+	var path = 'gltf/Duck.glb';
 	loader.load(path, function(gltf){
 	  var modelObj = gltf.scene;
 	 
