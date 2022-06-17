@@ -6,6 +6,7 @@ function init() {
 	  var modelObj = gltf.scene;
 	 
 	  /// モデルをSceneに追加
+      const scene = new THREE.Scene();
 	  scene.add(modelObj);
 	  
 	  /// モデルの表示を微調整...
