@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script src="https://unpkg.com/three@0.140.2/build/three.min.js"></script>
+    <script>
+        // ページの読み込みを待つ
+        window.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+
+            // サイズを指定
+            const width = 960;
+            const height = 540;
+
+            // レンダラー作成
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector("#myCanvas")
+            });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(width, height);
+
+            // シーン作成
+            const scene = new THREE.Scene();
+
+            // カメラ作成
+            const camera = new THREE.PerspectiveCamera(45, width / height);
+            camera.position.set(0, 0, 1000);
+
+            // 立方体作成
+            const geometry = new THREE.BoxGeometry(400, 400, 400);
+            const material = new THREE.MeshNormalMaterial();
+            const box = new THREE.Mesh(geometry, material);
+            scene.add(box);
+
+            tick();
+
+            function tick() {
+                box.rotation.y += 0.01;
+                box.rotation.z += 0.01;
+                
+                renderer.render(scene, camera);
+
+                requestAnimationFrame(tick);
+            }
+        }
+    </script>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+</body>
+</html>

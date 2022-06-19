@@ -2,7 +2,7 @@
   "name": "three",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "js/index.js",
   "scripts": {
     "start": "http-server -o"
   },
