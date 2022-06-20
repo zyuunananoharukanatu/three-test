@@ -12,7 +12,7 @@ function update() {
 
 function init() {
 	let loader = new THREE.GLTFLoader();
-	let path = 'gltf/Duck.glb';
+	let path = 'gltf/Unicode❤♻Test.glb';
 	loader.load(path, function(gltf){
 		modelObj = gltf.scene;
 
@@ -26,43 +26,24 @@ function init() {
 		modelObj.scale.set(gltfScale, gltfScale, gltfScale);
 
 		/** ポイントクラウドを読込モデルから生成 **/
-		let pointCloudGeo = new THREE.BufferGeometry();
 		let obj3dTypes = [
-			'Mesh', 'SkinnedMesh', 'Group'
+			'Mesh', 'SkinnedMesh'
 		];
-
-		// Scene内の全MeshをGeometryに結合する
+		// Scene内のGeometryを結合する
         let meshs = [];
-		scene.traverse(function(obj3d){
+		scene.traverse(function(obj3d) {
 			if(obj3dTypes.includes(obj3d.type)){
-				let geo = new THREE.BufferGeometry(obj3d.geometry)
-				let mesh = new THREE.Mesh(geo, obj3d.material);
-				mesh.applyMatrix4(obj3d.matrix);
-				mesh.updateMatrix();
-				pointCloudGeo.merge(mesh.geometry, mesh.matrix);
+				meshs.push(obj3d.geometry);
 			}
-		});
-        const geometry = THREE.BufferGeometryUtils.mergeBufferGeometries(boxes);
-
-		// scene.traverse(function(obj3d){
-		// 	if(obj3dTypes.includes(obj3d.type)){
-		// 		let geo = new THREE.BufferGeometry(obj3d.geometry)
-		// 		let mesh = new THREE.Mesh(geo, obj3d.material);
-		// 		mesh.applyMatrix4(obj3d.matrix);
-		// 		mesh.updateMatrix();
-		// 		pointCloudGeo.merge(mesh.geometry, mesh.matrix);
-		// 	}
-		// }).bind(this);
+		}.bind(this));
+        const pointCloudGeo = THREE.BufferGeometryUtils.mergeBufferGeometries(meshs);
 
 		// 結合が終わったらポイントクラウド生成
 		let pointCloud = new THREE.Points(
 			pointCloudGeo, new THREE.PointsMaterial({
-				// 点のサイズ
-				size: 100, 
-				// 点の色
-				color: 0x601500,
-				// サイズ減退の有無
-				sizeAttenuation: false
+				size: 1.5, // 点のサイズ
+				color: 0x15b7e8, // 点の色
+				sizeAttenuation: true // サイズ減退の有無
 			})
 		);
 
@@ -73,12 +54,12 @@ function init() {
 		scene.add(pointCloud);
 
 		// ひとまずモデル自体は非表示に
-		modelObj.visible = false;
+		// modelObj.visible = false;
 	});
 
 	// 表示用設定
 	const width = 960;
-	const height = 540;
+	const height = 740;
 	const canvasEle = document.querySelector("#myCanvas");
 	renderer = new THREE.WebGLRenderer({
 		canvas: canvasEle
