@@ -27,20 +27,32 @@ function init() {
 
 		/** ポイントクラウドを読込モデルから生成 **/
 		let pointCloudGeo = new THREE.BufferGeometry();
-		let pointCloudObj3dTypes = [
-			'Mesh', 'SkinnedMesh'
+		let obj3dTypes = [
+			'Mesh', 'SkinnedMesh', 'Group'
 		];
 
 		// Scene内の全MeshをGeometryに結合する
+        let meshs = [];
 		scene.traverse(function(obj3d){
-			if(pointCloudObj3dTypes.includes(obj3d.type)){
+			if(obj3dTypes.includes(obj3d.type)){
 				let geo = new THREE.BufferGeometry(obj3d.geometry)
 				let mesh = new THREE.Mesh(geo, obj3d.material);
 				mesh.applyMatrix4(obj3d.matrix);
 				mesh.updateMatrix();
 				pointCloudGeo.merge(mesh.geometry, mesh.matrix);
 			}
-		}.bind(this));
+		});
+        const geometry = THREE.BufferGeometryUtils.mergeBufferGeometries(boxes);
+
+		// scene.traverse(function(obj3d){
+		// 	if(obj3dTypes.includes(obj3d.type)){
+		// 		let geo = new THREE.BufferGeometry(obj3d.geometry)
+		// 		let mesh = new THREE.Mesh(geo, obj3d.material);
+		// 		mesh.applyMatrix4(obj3d.matrix);
+		// 		mesh.updateMatrix();
+		// 		pointCloudGeo.merge(mesh.geometry, mesh.matrix);
+		// 	}
+		// }).bind(this);
 
 		// 結合が終わったらポイントクラウド生成
 		let pointCloud = new THREE.Points(
@@ -61,7 +73,7 @@ function init() {
 		scene.add(pointCloud);
 
 		// ひとまずモデル自体は非表示に
-		// modelObj.visible = false;
+		modelObj.visible = false;
 	});
 
 	// 表示用設定
