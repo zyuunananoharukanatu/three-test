@@ -81,24 +81,18 @@
                 scene.add(point);
             })
             $("#remove").click(function() {
-                const geometry = new THREE.BufferGeometry();
-                geometry.setAttribute( 'position', new THREE.Float32BufferAttribute([
-                    THREE.MathUtils.randFloatSpread( 10 ),
-                    THREE.MathUtils.randFloatSpread( 10 ),
-                    THREE.MathUtils.randFloatSpread( 10 )
-                ], 3 ) );
-                const material = new THREE.PointsMaterial( { size:1.0, color: 0xFF0000 } );
-                const point = new THREE.Points( geometry, material );
-
-                scene.add(point);
+                if (scene.children.length === 2) {
+                    return false;
+                }
+                scene.remove(scene.children[scene.children.length - 1])
             })
         });
     </script>
 </head>
 <body>
     <canvas id="myCanvas"></canvas>
-    <input type="button" id="add" value="追加"><br>
-    <input type="button" id="remove" value="消去"><br>
-    <a href="./index.html">戻る</a>
+    <br><input type="button" id="add" value="追加">
+    <br><input type="button" id="remove" value="消去">
+    <br><a href="./index.html">戻る</a>
 </body>
 </html>
