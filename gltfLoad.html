@@ -16,10 +16,12 @@
 
     <div id="WebGL-output">
     </div>
+    <a href="./index.html">戻る</a>
 
 <script type="module">
     import * as THREE from'https://unpkg.com/three@0.126.1/build/three.module.js';
     import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+    import { TransformControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/TransformControls.js';
     import { GLTFLoader } from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/GLTFLoader.js';
 
     let camera;
@@ -37,19 +39,9 @@
         //カメラの作成
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         //カメラセット
-        camera.position.set(-20, 30, 50);
+        camera.position.set(-2, 3, 5);
         camera.lookAt(new THREE.Vector3(0, 10, 0));
         
-         // 滑らかにカメラコントローラーを制御する
-        const controls = new OrbitControls(camera, document.body);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.2;
-
-        //光源
-        const dirLight = new THREE.SpotLight(0xffffff,1.5);//color,強度
-        dirLight.position.set(30, 30, 30);
-        scene.add(dirLight);
-
         //レンダラー
         renderer = new THREE.WebGLRenderer({ 
             alpha: true,
@@ -57,6 +49,20 @@
         });
         renderer.setClearColor(new THREE.Color(0xffffff));
         renderer.setSize(window.innerWidth, window.innerHeight);
+
+         // 滑らかにカメラコントローラーを制御する
+        const controls = new OrbitControls(camera, document.body);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.2;
+
+        //光源
+        const spotLight1 = new THREE.SpotLight(0xffffff,1.5);//color,強度
+        spotLight1.position.set(30, 30, 30);
+        scene.add(spotLight1);
+        
+        const spotLight2 = new THREE.SpotLight(0xffffff,1.5);//color,強度
+        spotLight2.position.set(-30, -10, 10);
+        scene.add(spotLight2);
 
         //glbファイルの読み込み
         const loader = new GLTFLoader();
@@ -70,6 +76,15 @@
                 object.material.depthTest = true;//陰影で消える部分
                 }})
             scene.add(model);
+
+            const transControls = new TransformControls(camera, renderer.domElement);
+            transControls.addEventListener('change', animate);
+            transControls.attach(model);
+            transControls.addEventListener('dragging-changed', event => {
+                orbitControls.enabled = !event.value;
+            });
+            scene.add(transControls);
+
         }, undefined, function(e) {
             console.error(e);
         });
