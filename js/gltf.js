@@ -35,7 +35,7 @@ function init() {
 			if(obj3dTypes.includes(obj3d.type)){
 				meshs.push(obj3d.geometry);
 			}
-		}.bind(this));
+		});
         const pointCloudGeo = THREE.BufferGeometryUtils.mergeBufferGeometries(meshs);
 
 		// 結合が終わったらポイントクラウド生成
@@ -53,7 +53,6 @@ function init() {
 		pointCloud.scale.set(pointScale, pointScale, pointScale);
 		scene.add(pointCloud);
 
-        
         const transControls = new THREE.TransformControls(camera, renderer.domElement);
         transControls.addEventListener('change', update);
         transControls.attach(pointCloud);
@@ -62,9 +61,8 @@ function init() {
         });
         scene.add(transControls);
 
-
 		// ひとまずモデル自体は非表示に
-		modelObj.visible = false;
+		// modelObj.visible = false;
 	});
 
 	// 表示用設定
