@@ -3,50 +3,90 @@
 <head>
     <meta charset="utf-8"/>
     <script src="https://unpkg.com/three@0.140.2/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.140.2/examples/js/controls/OrbitControls.js"></script>
     <script>
         // ページの読み込みを待つ
         window.addEventListener('DOMContentLoaded', init);
 
+        let frameCount = 0;
+        let points = [
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 0, 10),
+            new THREE.Vector3(0, 10, 10),
+            new THREE.Vector3(10, 10, 10)
+        ];
         function init() {
+            const canvasEle = document.querySelector("#myCanvas");
 
             // サイズを指定
-            const width = 960;
-            const height = 540;
+            const width = innerWidth;
+            const height = innerHeight;
 
             // レンダラー作成
             const renderer = new THREE.WebGLRenderer({
-                canvas: document.querySelector("#myCanvas")
+                canvas: canvasEle
             });
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(width, height);
 
             // シーン作成
             const scene = new THREE.Scene();
+            scene.background = new THREE.Color( 0xFFFFFF );
 
             // カメラ作成
             const camera = new THREE.PerspectiveCamera(45, width / height);
-            camera.position.set(0, 0, 1000);
+            camera.position.set(0, 0, 100);
+
+            const controls = new THREE.OrbitControls(camera, canvasEle);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.2;
 
             // 線作成
-            const points = [
-                new THREE.Vector3(-100, 0, 0),
-                new THREE.Vector3(0, 100, 0),
-                new THREE.Vector3(100, 0, 0)
-            ];
-            const geometry = new THREE.BufferGeometry()
+            const geometry1 = new THREE.BufferGeometry()
                                         .setFromPoints(points);
-            const material = new THREE.LineBasicMaterial({
+            const material1 = new THREE.LineBasicMaterial({
                 color: 0x0000ff
             });
-            const line = new THREE.Line(geometry, material);
+            let line = new THREE.Line(geometry1, material1);
             scene.add(line);
 
             tick();
 
             function tick() {
-                line.rotation.y += 0.01;
-                line.rotation.z += 0.01;
-                
+                // line.rotation.y += 0.01;
+                // line.rotation.z += 0.01;
+                if (++frameCount === 1) {
+                    let bef4vec = points[points.length - 4].clone();
+                    let bef2vec = points[points.length - 2].clone();
+                    let bef1vec = points[points.length - 1].clone(); // 直前のベクトル（座標）
+
+                    points.push(bef1vec.add(bef4vec.cross(bef2vec).normalize().multiplyScalar(5)));
+
+                    let geometry = new THREE.BufferGeometry()
+                                        .setFromPoints(points);
+
+                    let material = new THREE.LineBasicMaterial({
+                        color: 0x0000ff
+                    });
+                    line = new THREE.Line(geometry, material);
+                    scene.remove(scene.children[0]);
+                    scene.add(line);
+                } else if (frameCount === 10) {
+                    frameCount = 0;
+                    let bef1vec = points[points.length - 1].clone(); // 直前のベクトル（座標）
+                    let bef2vec = points[points.length - 2].clone(); // 2つ前のベクトル（座標）
+                    points.push(bef1vec.add(bef1vec.clone().sub(bef2vec)));
+
+                    let geometry = new THREE.BufferGeometry()
+                                        .setFromPoints(points);
+                    let material = new THREE.LineBasicMaterial({
+                        color: 0x0000ff
+                    });
+                    line = new THREE.Line(geometry, material);
+                    scene.remove(scene.children[0]);
+                    scene.add(line);
+                }
+
                 renderer.render(scene, camera);
 
                 requestAnimationFrame(tick);

@@ -19,13 +19,13 @@ function init() {
 		// モデルをSceneに追加
 		scene.add(modelObj);
 
-		// モデルの表示を微調整...
+		// モデルの表示を微調整
 		// ここでは縮尺（scale）を調整
 		let gltfBox = new THREE.Box3().setFromObject(modelObj);
 		let gltfScale = 1 / (gltfBox.max.x - gltfBox.min.x) * 25;
 		modelObj.scale.set(gltfScale, gltfScale, gltfScale);
 
-		/** ポイントクラウドを読込モデルから生成 **/
+		// ポイントクラウドを読込モデルから生成
 		let obj3dTypes = [
 			'Mesh', 'SkinnedMesh'
 		];
